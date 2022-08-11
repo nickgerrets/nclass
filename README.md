@@ -1,5 +1,5 @@
 # nclass
-Orthodox Canonical Class Form generator.
+Orthodox Canonical Class Form generator. Made to make my life a bit easier by letting it generate the basic setup stuff of C++ classes for me.
 
 Usage:
 
