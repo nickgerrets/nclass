@@ -12,7 +12,14 @@ static void	genGetAndSet(std::ofstream& file, const Members& members)
 		{
 			std::string type = str.substr(0, str.find_last_of(' '));
 			std::string var = lastWord(str);
-			file << "\t\t" << type << '\t' << "get" << firstUpper(var) << "(void) const;" << end;
+			bool isBasic = isBasicType(str);
+			file << "\t\t";
+			if (!isBasic)
+				file << "const ";
+			file << type;
+			if (!isBasic)
+				file << "&";
+			file << '\t' << "get" << firstUpper(var) << "(void) const;" << end;
 		}
 	}
 
@@ -24,7 +31,15 @@ static void	genGetAndSet(std::ofstream& file, const Members& members)
 		{
 			std::string type = str.substr(0, str.find_last_of(' '));
 			std::string var = lastWord(str);
-			file << "\t\tvoid" << '\t' << "set" << firstUpper(var) << '(' << type << ' ' << lowerCase(var) << ");" << end;
+			bool isBasic = isBasicType(str);
+
+			file << "\t\tvoid" << '\t' << "set" << firstUpper(var) << '(';
+			if (!isBasic)
+				file << "const ";
+			file << type;
+			if (!isBasic)
+				file << '&';
+			file << ' ' << lowerCase(var) << ");" << end;
 		}
 	}
 }

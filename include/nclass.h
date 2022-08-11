@@ -6,6 +6,9 @@
 #include <fstream>
 #include <vector>
 
+#include "helpers.h"
+#include "types.h"
+
 constexpr const char end[] = "\n";
 
 using Members = std::vector<std::string>;
@@ -31,13 +34,6 @@ struct Options
 };
 
 extern Options g_options;
-
-//	Helpers
-bool		fileExists(const std::string& fname);
-std::string	upperCase(const std::string& str);
-std::string	lowerCase(const std::string& str);
-std::string	firstUpper(const std::string& str);
-std::string	lastWord(const std::string& str);
 
 void		genHeader(std::ofstream& file, const std::string& className, const Members& members);
 void		genSource(std::ofstream& file, const std::string& className, const Members& members);

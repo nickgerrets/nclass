@@ -100,7 +100,7 @@ void	setGlobalsFromArgs(int argc, char** argv)
 			g_options.setters = false;
 		else if (str == "--no-impl")
 			g_options.implement = false;
-		else if (str == "--no-class")
+		else if (str == "--no-class" || str == "-n")
 		{
 			g_options.pclass = false;
 			g_options.source = false;

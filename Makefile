@@ -1,5 +1,5 @@
 # ------------------- EDIT THIS SECTION -------------------
-NAME ?= nclass
+BIN_NAME ?= nclass
 
 BIN_DIR ?= .
 BUILD_DIR ?= ./build
@@ -36,7 +36,7 @@ CFLAGS += -fPIC $(INC_FLAGS) -MMD -MP
 # 	endif
 # endif
 
-TARGET := $(NAME)
+TARGET := $(BIN_NAME)
 
 # -------------------------------- END ---------------------
 

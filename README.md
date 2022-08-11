@@ -16,3 +16,9 @@ nclass ClassName
 To overwrite previously existing file add the '-o' flag:
 
 nclass -o ClassName
+
+Possible future plans:
+
+- auto includes
+- default values for members
+- generate more constructors
