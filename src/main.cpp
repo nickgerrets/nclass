@@ -6,69 +6,15 @@
 /*   By: ngerrets <ngerrets@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/08/10 10:42:39 by ngerrets      #+#    #+#                 */
-/*   Updated: 2022/08/10 13:04:44 by ngerrets      ########   odam.nl         */
+/*   Updated: 2022/08/11 13:55:37 by ngerrets      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <fstream>
-#include <iostream>
-#include <vector>
+#include "nclass.h"
 
-struct Options
-{
-	//	Default behaviours
-	bool		overwrite = false;
-	bool		getters = true;
-	bool		setters = true;
-	bool		members = true;
-	bool		implement = true;
-	std::string	headerPath = "./include/";
-	std::string	srcPath = "./src/";
-	std::string	headerSuffix = ".h";
-	std::string	srcSuffix = ".cpp";
-	std::string	memberPrefix = "m_";
-	std::string	className;
-}	g_options;
+Options g_options;
 
-using Members = std::vector<std::string>;
-
-bool	fileExists(const std::string& fname)
-{
-	std::ifstream	file (fname);
-	return file.good();
-}
-
-//	Copies and returns uppercase version of string
-std::string	upperCase(const std::string& str)
-{
-	std::string	ret (str);
-
-	for (char& c : ret)
-		c = (char)toupper(c);
-	return (ret);
-}
-
-//	Copies and returns lowercase version of string
-std::string	lowerCase(const std::string& str)
-{
-	std::string	ret (str);
-
-	for (char& c : ret)
-		c = (char)tolower(c);
-	return (ret);
-}
-
-//	Copies and returns version of string with first letter in uppercase
-std::string	firstUpper(const std::string& str)
-{
-	std::string	ret (str);
-
-	char& c = ret.at(0);
-	c = (char)toupper(c);
-	return (ret);
-}
-
-std::string	querryUser(const char* question)
+static std::string	querryUser(const char* question)
 {
 	if (question)
 		std::cout << question << std::endl;
@@ -79,7 +25,7 @@ std::string	querryUser(const char* question)
 	return (response);
 }
 
-std::ofstream	createFile(const std::string& path, const std::string& name)
+static std::ofstream	createFile(const std::string& path, const std::string& name)
 {
 	if (!g_options.overwrite && fileExists(path + name))
 	{
@@ -93,116 +39,31 @@ std::ofstream	createFile(const std::string& path, const std::string& name)
 	return (file);
 }
 
-void	genGetAndSet(std::ofstream& file, const Members& members)
+static void	generateFiles(const std::string& className, const Members& members)
 {
-	constexpr const char end[] = "\n";
-
-	if (members.empty())
-		return ;
-	//	GETTERS
-	if (g_options.getters)
+	if (g_options.header)
 	{
-		file << "\t\t//\t=== Getters ===" << end;
-		for (const std::string& str : members)
-		{
-			std::string type = str.substr(0, str.find(' '));
-
-			size_t	pos = str.find(' ');
-			std::string var;
-			if (pos != std::string::npos)
-				var = str.substr(str.find(' ') + 1, str.length());
-			else
-				var = "UNNAMED";
-
-			file << "\t\t" << type << '\t' << "get" << firstUpper(var) << "(void) const;" << end;
-		}
+		std::ofstream hfile = createFile(g_options.headerPath, className + g_options.headerSuffix);
+		std::cout << "Generating .h file..." << std::endl;
+		genHeader(hfile, className, members);
 	}
-
-	//	SETTERS
-	if (g_options.setters)
+	if (g_options.source)
 	{
-		file << end << "\t\t//\t=== Setters ===" << end;
-		for (const std::string& str : members)
-		{
-			std::string type = str.substr(0, str.find(' '));
-
-			size_t	pos = str.find(' ');
-			std::string var;
-			if (pos != std::string::npos)
-				var = str.substr(str.find(' ') + 1, str.length());
-			else
-				var = "UNNAMED";
-
-			file << "\t\tvoid" << '\t' << "set" << firstUpper(var) << '(' << type << ' ' << lowerCase(var) << ");" << end;
-		}
+		std::ofstream sfile = createFile(g_options.srcPath, className + g_options.srcSuffix);
+		std::cout << "Generating .cpp file..." << std::endl;
+		genSource(sfile, className, members);
 	}
-}
-
-void	genMemberVars(std::ofstream& file, const Members& members)
-{
-	constexpr const char end[] = "\n";
-	constexpr const char prefix[] = "m_";
-
-	if (members.empty())
-		return ;
-	file << "\tprivate:" << end;
-	file << "\t\t//\t=== Member variables ===" << end;
-	for (const std::string& str : members)
-	{
-		std::string type = str.substr(0, str.find(' '));
-
-		size_t	pos = str.find(' ');
-		std::string var;
-		if (pos != std::string::npos)
-			var = str.substr(str.find(' ') + 1, str.length());
-		else
-			var = "UNNAMED";
-
-		file << "\t\t" << type << '\t' << prefix << var << ';' << end;
-	}
-}
-
-void	genClass(std::ofstream& file, const std::string& className, const Members& members)
-{
-	constexpr const char end[] = "\n";
-
-	//	Starting header guard
-	file << "#ifndef " << upperCase(className) << "_H" << end;
-	file << "# define " << upperCase(className) << "_H\n" << end;
-
-	//	Start class
-	file << "class " << className << end;
-	file << '{' << end;
-	file << "\tpublic:" << end;
-
-	//	(de)Constructors
-	file << "\t\t//\t=== (de)constructors ===" << end;
-	file << "\t\t" << className << "();" << end; //	Default
-	file << "\t\t" << className << "(const " << className << "& rhs);" << end; // Copy
-	file << "\t\t" << className << "& operator=(const " << className << "& rhs);" << end; // copy assignment
-	file << "\t\t~" << className << "();" << end << end; //	Destructor
-
-	genGetAndSet(file, members);
-	if (g_options.members)
-		genMemberVars(file, members);
-
-	//	End class
-	file << "};" << end;
-
-	//	Ending header guard
-	file << "\n#endif " << "// " << upperCase(className) << "_H" << std::endl;
+	std::cout << "Done!" << std::endl;
 }
 
 int	interfaced(void)
 {
 	std::string	className = "";
 
-	className = querryUser("Please enter class name:");
-	std::ofstream file = createFile(g_options.headerPath, className + g_options.headerSuffix);
+	className = querryUser("Please enter class/header name:");
 
 	std::string memvar = "";
 	Members members {};
-
 	if (g_options.members)
 	{
 		std::cout << "Enter member variables (<type> <name>), blank line to stop:" << std::endl;
@@ -210,19 +71,13 @@ int	interfaced(void)
 			members.emplace_back(memvar);
 	}
 
-	std::cout << "Generating class..." << std::endl;
-	genClass(file, className, members);
-
+	generateFiles(className, members);
 	return (0);
 }
 
 int	direct(void)
 {
-	std::ofstream file = createFile(g_options.headerPath, g_options.className + g_options.headerSuffix);
-
-	std::cout << "Generating class..." << std::endl;
-	genClass(file, g_options.className, {});
-
+	generateFiles(g_options.className, {});
 	return (0);
 }
 
@@ -233,6 +88,10 @@ void	setGlobalsFromArgs(int argc, char** argv)
 		std::string	str (argv[i]);
 		if (str == "-o")
 			g_options.overwrite = true;
+		else if (str == "--no-header")
+			g_options.header = false;
+		else if (str == "--no-source")
+			g_options.source = false;
 		else if (str == "--no-members")
 			g_options.members = false;
 		else if (str == "--no-getters")
@@ -241,7 +100,12 @@ void	setGlobalsFromArgs(int argc, char** argv)
 			g_options.setters = false;
 		else if (str == "--no-impl")
 			g_options.implement = false;
-		else
+		else if (str == "--no-class")
+		{
+			g_options.pclass = false;
+			g_options.source = false;
+		}
+		else if (str[0] != '-')
 		{
 			g_options.className = str;
 		}
@@ -251,6 +115,8 @@ void	setGlobalsFromArgs(int argc, char** argv)
 int	main(int argc, char** argv)
 {
 	setGlobalsFromArgs(argc, argv);
+	if (!g_options.header && !g_options.source)
+		return (0);
 	if (g_options.className.empty())
 		return interfaced();
 	else
