@@ -6,7 +6,7 @@
 /*   By: ngerrets <ngerrets@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/08/10 10:42:39 by ngerrets      #+#    #+#                 */
-/*   Updated: 2022/08/11 13:55:37 by ngerrets      ########   odam.nl         */
+/*   Updated: 2022/08/11 14:02:56 by ngerrets      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ int	interfaced(void)
 	Members members {};
 	if (g_options.members)
 	{
-		std::cout << "Enter member variables (<type> <name>), blank line to stop:" << std::endl;
+		std::cout << "Enter member variables (<type(s)> <name>), blank line to stop:" << std::endl;
 		while ((memvar = querryUser(NULL)).size() > 0)
 			members.emplace_back(memvar);
 	}

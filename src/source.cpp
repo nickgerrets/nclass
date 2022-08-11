@@ -1,5 +1,36 @@
 #include "nclass.h"
 
+static void	genGetAndSet(std::ofstream& file, const std::string& className, const Members& members)
+{
+	if (g_options.getters)
+	{
+		file << "//\t=== Getters ===" << end;
+		for (const std::string& str : members)
+		{
+			std::string type = str.substr(0, str.find_last_of(' '));
+			std::string var = lastWord(str);
+			file << type << '\t' << className << "::get" << firstUpper(var) << "(void) const" << end;
+			file << '{' << end;
+			file << "\treturn " << g_options.memberPrefix << var << ';' << end;
+			file << '}' << end << end;
+		}
+	}
+	if (g_options.setters)
+	{
+		file << "//\t=== Setters ===" << end;
+		for (const std::string& str : members)
+		{
+			std::string type = str.substr(0, str.find_last_of(' '));
+			std::string var = lastWord(str);
+			file << "void" << '\t' << className << "::set" << firstUpper(var) << '(' << type << ' ' << lowerCase(var) << ")" << end;
+			file << '{' << end;
+			file << '\t'<< g_options.memberPrefix << var << " = " << lowerCase(var) << ';' << end;
+			file << '}' << end << end;
+		}
+	}
+
+}
+
 static void	defConstructor(std::ofstream& file, const std::string& className)
 {
 	file << className << "::" << className << "() {}" << end; //	Default
@@ -48,9 +79,10 @@ void	genSource(std::ofstream& file, const std::string& className, const Members&
 	copyAssignment(file, className, members);
 	file << end;
 	destructor(file, className);
+	file << end;
 
 	//	Getters & Setters
-
+	genGetAndSet(file, className, members);
 	//	Flush
 	file << std::endl;
 }
