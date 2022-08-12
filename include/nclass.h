@@ -25,8 +25,8 @@ struct Options
 	bool		setters = true;
 	bool		members = true;
 	bool		implement = true;
-	std::string	headerPath = "./include/";
-	std::string	srcPath = "./src/";
+	std::string	headerPath = "./";
+	std::string	srcPath = "./";
 	std::string	headerSuffix = ".h";
 	std::string	srcSuffix = ".cpp";
 	std::string	memberPrefix = "m_";
