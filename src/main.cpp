@@ -6,7 +6,7 @@
 /*   By: ngerrets <ngerrets@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/08/10 10:42:39 by ngerrets      #+#    #+#                 */
-/*   Updated: 2022/08/11 14:02:56 by ngerrets      ########   odam.nl         */
+/*   Updated: 2022/08/17 14:30:30 by ngerrets      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,6 +100,8 @@ void	setGlobalsFromArgs(int argc, char** argv)
 			g_options.setters = false;
 		else if (str == "--no-impl")
 			g_options.implement = false;
+		else if (str == "--no-msg")
+			g_options.constructor_msg = false;
 		else if (str == "--no-class" || str == "-n")
 		{
 			g_options.pclass = false;

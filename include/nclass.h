@@ -25,6 +25,7 @@ struct Options
 	bool		setters = true;
 	bool		members = true;
 	bool		implement = true;
+	bool		constructor_msg = true;
 	std::string	headerPath = "./";
 	std::string	srcPath = "./";
 	std::string	headerSuffix = ".h";

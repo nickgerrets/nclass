@@ -48,7 +48,20 @@ static void	genGetAndSet(std::ofstream& file, const std::string& className, cons
 
 static void	defConstructor(std::ofstream& file, const std::string& className)
 {
-	file << className << "::" << className << "() {}" << end; //	Default
+	file << className << "::" << className << "()"; //	Default
+
+	if (!g_options.constructor_msg)
+		file << " {}" << end;
+	else
+	{
+		file
+			<< end
+			<< '{' << end
+			<< "\tstd::cout" << end
+			<< "\t\t<< \"::" << className << " default constructor called.\"" << end
+			<< "\t\t<< std::endl;" << end
+			<< '}' << end;
+	}
 }
 
 static void	copyConstructor(std::ofstream& file, const std::string& className)
@@ -56,6 +69,15 @@ static void	copyConstructor(std::ofstream& file, const std::string& className)
 	file << className << "::" << className << "(const " << className << "& rhs)" << end; // Copy
 
 	file << '{' << end;
+
+	if (g_options.constructor_msg)
+	{
+		file
+			<< "\tstd::cout" << end
+			<< "\t\t<< \"::" << className << " copy constructor called.\"" << end
+			<< "\t\t<< std::endl;" << end << end;
+	}
+
 	file << "\t*this = rhs;" << end;
 	file << '}' << end;
 }
@@ -65,6 +87,15 @@ static void	copyAssignment(std::ofstream& file, const std::string& className, co
 	file <<  className << "&\t" << className << "::operator=(const " << className << "& rhs)" << end; // copy assignment
 
 	file << '{' << end;
+
+	if (g_options.constructor_msg)
+	{
+		file
+			<< "\tstd::cout" << end
+			<< "\t\t<< \"::" << className << " copy-assignment operator called.\"" << end
+			<< "\t\t<< std::endl;" << end << end;
+	}
+
 	for (const std::string& str : members)
 	{
 		const std::string var = g_options.memberPrefix + lastWord(str);
@@ -76,7 +107,20 @@ static void	copyAssignment(std::ofstream& file, const std::string& className, co
 
 static void	destructor(std::ofstream& file, const std::string& className)
 {
-	file << className << "::~" << className << "() {}" << end; //	Destructor
+	file << className << "::~" << className << "()"; //	Destructor
+
+	if (!g_options.constructor_msg)
+		file << " {}" << end;
+	else
+	{
+		file
+			<< end
+			<< '{' << end
+			<< "\tstd::cout" << end
+			<< "\t\t<< \"::" << className << " destructor called.\"" << end
+			<< "\t\t<< std::endl;" << end
+			<< '}' << end;
+	}
 }
 
 void	genSource(std::ofstream& file, const std::string& className, const Members& members)
@@ -84,6 +128,8 @@ void	genSource(std::ofstream& file, const std::string& className, const Members&
 	//	includes
 	if (g_options.header)
 		file << "#include \"" << className << ".h\"" << end << end;
+	if (g_options.constructor_msg)
+		file << "#include <iostream>" << end << end;
 
 	//	(de)Constructors
 	file << "//\t=== (de)constructors ===" << end;
