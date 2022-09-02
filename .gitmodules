@@ -1,0 +1,3 @@
+[submodule "njson"]
+	path = njson
+	url = git@github.com:nickgerrets/njson.git
