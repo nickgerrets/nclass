@@ -1,0 +1,14 @@
+{
+	header_path : "./",
+	source_path : "./",
+	header_suffix : ".h",
+	source_suffix : ".cpp",
+
+	style : {
+		member_prefix : "",
+		member_suffix : "_",
+		getter_prefix : "",
+		setter_prefix : "set_",
+		member_uppercase : false
+	}
+}

@@ -16,6 +16,7 @@ using Members = std::vector<std::string>;
 //	Global Options for the program
 struct Options
 {
+	std::string	className;
 	//	Default behaviours
 	bool		header = true;
 	bool		pclass = true;
@@ -26,12 +27,19 @@ struct Options
 	bool		members = true;
 	bool		implement = true;
 	bool		constructor_msg = true;
+
+	//	Paths
 	std::string	headerPath = "./";
 	std::string	srcPath = "./";
 	std::string	headerSuffix = ".h";
 	std::string	srcSuffix = ".cpp";
+
+	//	Style
 	std::string	memberPrefix = "m_";
-	std::string	className;
+	std::string	memberSuffix = "";
+	std::string	getterPrefix = "get";
+	std::string	setterPrefix = "set";
+	bool		uppercaseMember = true;
 };
 
 extern Options g_options;

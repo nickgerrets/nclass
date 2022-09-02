@@ -11,14 +11,14 @@ static void	genGetAndSet(std::ofstream& file, const std::string& className, cons
 			std::string var = lastWord(str);
 			bool isBasic = isBasicType(str);
 
-			if (!isBasic)
-				file << "const ";
+			if (!isBasic) file << "const ";
 			file << type;
-			if (!isBasic)
-				file << "&";
-			file << '\t' << className << "::get" << firstUpper(var) << "(void) const" << end;
+			if (!isBasic) file << "&";
+			file << '\t' << className << "::" << g_options.getterPrefix;
+			if (g_options.uppercaseMember) file << firstUpper(var); else file << var;
+			file << "(void) const" << end;
 			file << '{' << end;
-			file << "\treturn " << g_options.memberPrefix << var << ';' << end;
+			file << "\treturn " << g_options.memberPrefix << var << g_options.memberSuffix << ';' << end;
 			file << '}' << end << end;
 		}
 	}
@@ -31,15 +31,15 @@ static void	genGetAndSet(std::ofstream& file, const std::string& className, cons
 			std::string var = lastWord(str);
 			bool isBasic = isBasicType(str);
 
-			file << "void" << '\t' << className << "::set" << firstUpper(var) << '(';
-			if (!isBasic)
-				file << "const ";
+			file << "void" << '\t' << className << "::" << g_options.setterPrefix;
+			if (g_options.uppercaseMember) file << firstUpper(var); else file << var;
+			file << '(';
+			if (!isBasic) file << "const ";
 			file << type;
-			if (!isBasic)
-				file << "&";
+			if (!isBasic) file << "&";
 			file << ' ' << lowerCase(var) << ")" << end;
 			file << '{' << end;
-			file << '\t'<< g_options.memberPrefix << var << " = " << lowerCase(var) << ';' << end;
+			file << '\t'<< g_options.memberPrefix << var << g_options.memberSuffix << " = " << lowerCase(var) << ';' << end;
 			file << '}' << end << end;
 		}
 	}
@@ -98,7 +98,7 @@ static void	copyAssignment(std::ofstream& file, const std::string& className, co
 
 	for (const std::string& str : members)
 	{
-		const std::string var = g_options.memberPrefix + lastWord(str);
+		const std::string var = g_options.memberPrefix + lastWord(str) + g_options.memberSuffix;
 		file << '\t' << var << " = " << "rhs." << var << ';' << end;
 	}
 	file << "\treturn *this;" << end;

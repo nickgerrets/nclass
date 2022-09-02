@@ -6,13 +6,63 @@
 /*   By: ngerrets <ngerrets@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/08/10 10:42:39 by ngerrets      #+#    #+#                 */
-/*   Updated: 2022/08/17 14:30:30 by ngerrets      ########   odam.nl         */
+/*   Updated: 2022/09/02 13:35:21 by ngerrets      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "nclass.h"
+#include "Json.h"
 
 Options g_options;
+
+njson::Json*	asType(njson::Json& node, njson::Json::Type type)
+{
+	if ( node.getType() == type )
+		return &node;
+	return nullptr;
+}
+
+void	setOptionsFromJson(const char* fname)
+{
+	using namespace njson;
+
+	Json* json = parse(fname);
+	if (!json)
+		return ;
+
+	//	STYLING
+	Json& style = json->find("style");
+	if (style.getType() != Json::Type::OBJECT) { delete json; return ; }
+
+	if ( Json* node = asType(style.find("member_prefix"), Json::Type::STRING) )
+		g_options.memberPrefix = node->getString();
+	
+	if ( Json* node = asType(style.find("member_suffix"), Json::Type::STRING) )
+		g_options.memberSuffix = node->getString();
+
+	if ( Json* node = asType(style.find("getter_prefix"), Json::Type::STRING) )
+		g_options.getterPrefix = node->getString();
+
+	if ( Json* node = asType(style.find("setter_prefix"), Json::Type::STRING) )
+		g_options.setterPrefix = node->getString();
+	
+	if ( Json* node = asType(style.find("member_uppercase"), Json::Type::BOOL) )
+		g_options.uppercaseMember = node->getBool();
+	
+	//	PATH
+	if ( Json* node = asType(style.find("header_path"), Json::Type::STRING) )
+		g_options.headerPath = node->getString();
+
+	if ( Json* node = asType(style.find("header_suffix"), Json::Type::STRING) )
+		g_options.headerSuffix = node->getString();
+
+	if ( Json* node = asType(style.find("source_path"), Json::Type::STRING) )
+		g_options.srcPath = node->getString();
+
+	if ( Json* node = asType(style.find("source_suffix"), Json::Type::STRING) )
+		g_options.srcSuffix = node->getString();
+
+}
 
 static std::string	querryUser(const char* question)
 {
@@ -117,6 +167,7 @@ void	setGlobalsFromArgs(int argc, char** argv)
 int	main(int argc, char** argv)
 {
 	setGlobalsFromArgs(argc, argv);
+	setOptionsFromJson("options.json");
 	if (!g_options.header && !g_options.source)
 		return (0);
 	if (g_options.className.empty())

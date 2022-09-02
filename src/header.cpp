@@ -14,12 +14,12 @@ static void	genGetAndSet(std::ofstream& file, const Members& members)
 			std::string var = lastWord(str);
 			bool isBasic = isBasicType(str);
 			file << "\t\t";
-			if (!isBasic)
-				file << "const ";
+			if (!isBasic) file << "const ";
 			file << type;
-			if (!isBasic)
-				file << "&";
-			file << '\t' << "get" << firstUpper(var) << "(void) const;" << end;
+			if (!isBasic) file << "&";
+			file << '\t';
+			if (g_options.uppercaseMember) file << firstUpper(var); else file << var;
+			file << "(void) const;" << end;
 		}
 	}
 
@@ -33,12 +33,12 @@ static void	genGetAndSet(std::ofstream& file, const Members& members)
 			std::string var = lastWord(str);
 			bool isBasic = isBasicType(str);
 
-			file << "\t\tvoid" << '\t' << "set" << firstUpper(var) << '(';
-			if (!isBasic)
-				file << "const ";
+			file << "\t\tvoid" << '\t' << g_options.setterPrefix;
+			if (g_options.uppercaseMember) file << firstUpper(var); else file << var;
+			file << '(';
+			if (!isBasic) file << "const ";
 			file << type;
-			if (!isBasic)
-				file << '&';
+			if (!isBasic) file << '&';
 			file << ' ' << lowerCase(var) << ");" << end;
 		}
 	}
@@ -53,7 +53,7 @@ static void	genMemberVars(std::ofstream& file, const Members& members)
 	for (const std::string& str : members)
 	{
 		std::string type = str.substr(0, str.find_last_of(' '));
-		std::string var = g_options.memberPrefix + lastWord(str);
+		std::string var = g_options.memberPrefix + lastWord(str) + g_options.memberSuffix;
 
 		file << "\t\t" << type << '\t' << var << ';' << end;
 	}
