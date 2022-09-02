@@ -4,10 +4,12 @@ BIN_NAME ?= nclass
 BIN_DIR ?= .
 BUILD_DIR ?= ./build
 SRC_DIRS ?= ./src ./include
-INC_DIRS += ./include
+INC_DIRS += ./include ./njson/include
 CPPFLAGS ?= -Wall -Wextra -std=c++11
 
-LDFLAGS ?=
+NJSON := njson/libnjson.a
+
+LDFLAGS ?= -L njson/ -lnjson
 
 MAC_LDFLAGS :=
 WIN_LDFLAGS :=
@@ -50,10 +52,13 @@ $(BIN_DIR)/$(TARGET): $(OBJS)
 	@echo "Done!"
 
 # c++ source
-$(BUILD_DIR)/%.cpp.o: %.cpp
+$(BUILD_DIR)/%.cpp.o: %.cpp $(NJSON)
 	@$(MKDIR_P) $(dir $@)
 	@echo "Compiling: " $<
 	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+
+$(NJSON):
+	$(MAKE) -C njson/
 
 # c source
 $(BUILD_DIR)/%.c.o: %.c
