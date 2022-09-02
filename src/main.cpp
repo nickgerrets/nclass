@@ -6,7 +6,7 @@
 /*   By: ngerrets <ngerrets@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2022/08/10 10:42:39 by ngerrets      #+#    #+#                 */
-/*   Updated: 2022/09/02 13:35:21 by ngerrets      ########   odam.nl         */
+/*   Updated: 2022/09/02 13:39:40 by ngerrets      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 Options g_options;
 
+//	returns nullptr if node isn't of type, else returns pointer to node
 njson::Json*	asType(njson::Json& node, njson::Json::Type type)
 {
 	if ( node.getType() == type )
@@ -131,7 +132,7 @@ int	direct(void)
 	return (0);
 }
 
-void	setGlobalsFromArgs(int argc, char** argv)
+void	setOptionsFromArgs(int argc, char** argv)
 {
 	for (int i = 1; i < argc; ++i)
 	{
@@ -166,8 +167,8 @@ void	setGlobalsFromArgs(int argc, char** argv)
 
 int	main(int argc, char** argv)
 {
-	setGlobalsFromArgs(argc, argv);
 	setOptionsFromJson("options.json");
+	setOptionsFromArgs(argc, argv);
 	if (!g_options.header && !g_options.source)
 		return (0);
 	if (g_options.className.empty())
